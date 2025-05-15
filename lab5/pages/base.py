@@ -1,15 +1,19 @@
-from dataclasses import dataclass
-from abc import ABC
-
-from selenium.webdriver.remote.webdriver import WebDriver
-from selenium.webdriver import Safari
+import time
+from selenium.webdriver.support.wait import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 
 
-@dataclass
-class BasePage(ABC):
-    driver: WebDriver
+class BasePage:
+    def __init__(self, driver):
+        self.driver = driver
+        self.wait = WebDriverWait(driver, 15)
 
+    def wait_for_element(self, locator):
+        return self.wait.until(EC.visibility_of_element_located(locator))
 
-@dataclass
-class BaseSafariPage(ABC, BasePage):
-    driver: Safari
+    def wait_for_clickable(self, locator):
+        return self.wait.until(EC.element_to_be_clickable(locator))
+
+    def safe_click(self, element):
+        time.sleep(2)
+        self.driver.execute_script('arguments[0].click();', element)
